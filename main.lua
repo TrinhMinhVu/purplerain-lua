@@ -1,58 +1,68 @@
-function Cal_var()
+Rain = {
+    x = 0,
+    y = 0,
+    width = 0,
+    height = 0,
+    opacity = 0,
+    speed = 0
+}
+
+function Rain:new(o, x, speed, opacity)
+    o = o or {}
+    setmetatable(o, self)
+    self.__index = self
+    self.x = x or 1
+    self.y = 1
+
+    self.width = RAIN_WIDTH
+    self.height = RAIN_HEIGHT
+
+    self.opacity = opacity or 1
+    self.speed = speed or 100
+
+    return o
+end
+
+function CAL_VARS()
+
+    DENSITY = 0.3
+
     WIDTH_OF_WINDOW = love.graphics.getWidth()
     HEIGHT_OF_WINDOW = love.graphics.getHeight()
 
-    TOP_SPEED = HEIGHT_OF_WINDOW * 1.5
-    LOWEST_SPEED = HEIGHT_OF_WINDOW * 0.7
-    NUM_OF_RAIN_DROPS = (WIDTH_OF_WINDOW + HEIGHT_OF_WINDOW) * 1.5
+    RAIN_WIDTH = WIDTH_OF_WINDOW / 266
+    RAIN_HEIGHT = HEIGHT_OF_WINDOW / 37
+
+    NUM_OF_RAIN_DROPS = (WIDTH_OF_WINDOW * HEIGHT_OF_WINDOW) / (RAIN_HEIGHT * RAIN_WIDTH) * DENSITY
+
+    TOP_SPEED = HEIGHT_OF_WINDOW
+    LOWEST_SPEED = HEIGHT_OF_WINDOW
 end
 
-function love.load()
-
-    RAIN_WIDTH = 3
-    RAIN_HEIGHT = 16
-
-    Cal_var()
-
+function CREATE_RAIN_DROPS()
     RAIN_DROPS = {}
-    Rain = {
-        x = 0,
-        y = 0,
-        width = 0,
-        height = 0,
-        opacity = 0,
-        speed = 0
-    }
-
-    function Rain:new(o, x, speed, opacity)
-        o = o or {}
-        setmetatable(o, self)
-        self.__index = self
-        self.x = x or 1
-        self.y = 1
-
-        self.width = RAIN_WIDTH
-        self.height = RAIN_HEIGHT
-
-        self.opacity = opacity or 1
-        self.speed = speed or 100
-
-        return o
-    end
-
     for _ = 1, NUM_OF_RAIN_DROPS do
         local r = Rain:new { x = math.random(WIDTH_OF_WINDOW), speed = math.random(LOWEST_SPEED, TOP_SPEED),
             opacity = math.random() }
         table.insert(RAIN_DROPS, r)
     end
-    SOUND = love.audio.newSource("rain-07.wav", "stream") -- the "stream" tells LÖVE to stream the file from disk, good for longer music tracks
-    SOUND:play()
+end
+
+function love.load()
+
+
+    CAL_VARS()
+
+    CREATE_RAIN_DROPS()
+
     love.graphics.setBackgroundColor(230, 230, 250)
+
     R = {}
 end
 
 function love.resize()
-    Cal_var()
+    CAL_VARS()
+    CREATE_RAIN_DROPS()
 end
 
 function love.keypressed(key)
@@ -77,13 +87,9 @@ function love.update(dt)
             end
         end
     end
-    if not SOUND:isPlaying() then
-        SOUND:play()
-    end
 end
 
 function love.draw()
-    --love.graphics.rectangle('fill', 40, 0, 2, 15)
     for i = 1, NUM_OF_RAIN_DROPS do
         R = RAIN_DROPS[i]
         if R ~= nil then
