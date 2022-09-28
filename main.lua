@@ -1,12 +1,18 @@
-function love.load()
-    NUM_OF_RAIN_DROPS = 500
-    TOP_SPEED = 1300
-    LOWEST_SPEED = 600
-    HEIGHT_OF_WINDOW = love.graphics.getHeight()
+function Cal_var()
     WIDTH_OF_WINDOW = love.graphics.getWidth()
+    HEIGHT_OF_WINDOW = love.graphics.getHeight()
+
+    TOP_SPEED = HEIGHT_OF_WINDOW * 1.5
+    LOWEST_SPEED = HEIGHT_OF_WINDOW * 0.7
+    NUM_OF_RAIN_DROPS = (WIDTH_OF_WINDOW + HEIGHT_OF_WINDOW) * 1.5
+end
+
+function love.load()
 
     RAIN_WIDTH = 3
     RAIN_HEIGHT = 16
+
+    Cal_var()
 
     RAIN_DROPS = {}
     Rain = {
@@ -42,7 +48,11 @@ function love.load()
     SOUND = love.audio.newSource("rain-07.wav", "stream") -- the "stream" tells LÖVE to stream the file from disk, good for longer music tracks
     SOUND:play()
     love.graphics.setBackgroundColor(230, 230, 250)
-    R = nil
+    R = {}
+end
+
+function love.resize()
+    Cal_var()
 end
 
 function love.keypressed(key)
@@ -61,7 +71,7 @@ function love.update(dt)
                 r.y = 0
                 r.x = math.random(WIDTH_OF_WINDOW)
                 r.opacity = math.random()
-                r.speed = math.random(LOWEST_SPEED, TOP_SPEED)*r.opacity
+                r.speed = math.random(LOWEST_SPEED, TOP_SPEED) * r.opacity
                 r.width = RAIN_WIDTH * r.opacity
                 r.heigth = RAIN_HEIGHT * r.opacity
             end
@@ -76,7 +86,9 @@ function love.draw()
     --love.graphics.rectangle('fill', 40, 0, 2, 15)
     for i = 1, NUM_OF_RAIN_DROPS do
         R = RAIN_DROPS[i]
-        love.graphics.setColor(128 / 255, 43 / 255, 226 / 255, R.opacity)
-        love.graphics.rectangle('fill', R.x, R.y, R.width, R.height)
+        if R ~= nil then
+            love.graphics.setColor(128 / 255, 43 / 255, 226 / 255, R.opacity)
+            love.graphics.rectangle('fill', R.x, R.y, R.width, R.height)
+        end
     end
 end
